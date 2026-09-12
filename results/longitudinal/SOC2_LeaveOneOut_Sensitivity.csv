@@ -1,0 +1,11 @@
+predictor,outcome,n,loo_rho_min,loo_rho_median,loo_rho_max,sign_stability
+ilo_exposure_mean_weighted,employment_common_2022_annualized_pct,22,0.3090909090909091,0.36103896103896105,0.4896103896103896,1.0
+ilo_exposure_mean_weighted,postings_common_2022_annualized_pct,22,-0.45714285714285713,-0.36363636363636365,-0.2727272727272727,1.0
+ilo_exposure_mean_weighted,salary_common_2022_annualized_pct,22,0.20649350649350648,0.2792207792207792,0.3675324675324675,1.0
+ilo_exposure_mean_weighted,rl_hiring_rate_common_2022_mean,22,0.6805194805194805,0.7051948051948052,0.7857142857142857,1.0
+ilo_exposure_mean_weighted,rl_attrition_rate_common_2022_mean,22,0.6922077922077923,0.7116883116883117,0.7831168831168831,1.0
+observed_exposure_weighted,employment_common_2022_annualized_pct,22,0.35844155844155845,0.44025974025974024,0.5545454545454546,1.0
+observed_exposure_weighted,postings_common_2022_annualized_pct,22,-0.1909090909090909,-0.10714285714285712,0.033766233766233764,0.8636363636363636
+observed_exposure_weighted,salary_common_2022_annualized_pct,22,0.35974025974025975,0.425974025974026,0.5298701298701299,1.0
+observed_exposure_weighted,rl_hiring_rate_common_2022_mean,22,0.6363636363636362,0.6766233766233767,0.7376623376623377,1.0
+observed_exposure_weighted,rl_attrition_rate_common_2022_mean,22,0.638961038961039,0.6837662337662338,0.7311688311688312,1.0

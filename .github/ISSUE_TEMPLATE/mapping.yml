@@ -1,0 +1,21 @@
+name: Occupation mapping issue
+description: Report a questionable SOC / O*NET / ISCO mapping
+title: "[Mapping] "
+labels: ["mapping"]
+body:
+  - type: input
+    id: occupation
+    attributes:
+      label: Occupation
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What looks wrong?
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Supporting source

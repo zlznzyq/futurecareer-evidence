@@ -1,0 +1,17 @@
+name: Methodology proposal
+description: Suggest or challenge a metric or method
+title: "[Method] "
+labels: ["methodology"]
+body:
+  - type: textarea
+    id: claim
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / validation plan
+    validations:
+      required: true

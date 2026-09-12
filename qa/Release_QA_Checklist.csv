@@ -1,0 +1,30 @@
+check,status,detail
+SOC6 unique,PASS,867 unique / 867 rows
+career_evidence_index_beta range,PASS,"min=13.900, max=84.400, n=756"
+market_opportunity_score range,PASS,"min=2.600, max=98.000, n=819"
+growth_score range,PASS,"min=0.100, max=100.000, n=819"
+opening_score range,PASS,"min=0.200, max=100.000, n=819"
+wage_score range,PASS,"min=0.100, max=100.000, n=813"
+future_skill_fit_score range,PASS,"min=3.000, max=89.600, n=819"
+ai_potential_exposure_score range,PASS,"min=8.900, max=70.000, n=840"
+ai_observed_usage_score range,PASS,"min=0.000, max=74.500, n=756"
+HumanMoat_seed_equal_weight range,PASS,"min=10.110, max=88.061, n=786"
+Physicality range,PASS,"min=0.823, max=99.030, n=786"
+Judgment range,PASS,"min=1.116, max=98.664, n=786"
+Interaction range,PASS,"min=1.372, max=95.082, n=786"
+Responsibility range,PASS,"min=0.631, max=100.000, n=786"
+Context range,PASS,"min=1.518, max=97.366, n=786"
+Web JSON count,PASS,867 records
+Web SOC unique,PASS,all web SOC keys unique
+No JSON NaN,PASS,valid browser-safe JSON
+Required file: README.md,PASS,4457
+Required file: CHANGELOG.md,PASS,898
+Required file: CONTRIBUTING.md,PASS,660
+Required file: docs/DATA_LICENSE.md,PASS,559
+Required file: docs/PROCESSING_LOG.md,PASS,3568
+Required file: docs/DATA_SOURCES.md,PASS,812
+Required file: web/index.html,PASS,2825
+Required file: web/methodology.html,PASS,1826
+Required file: web/app.js,PASS,6476
+Required file: web/style.css,PASS,5955
+Local web links,PASS,no broken local hrefs

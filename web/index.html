@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="FutureCareer Evidence — 用公开数据，把AI时代的职业变化讲清楚。">
+<title>FutureCareer Evidence</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+<a class="logo" href="index.html"><span class="mark">F</span><span>FutureCareer</span><small>Evidence</small></a>
+<nav><a href="#explore">探索职业</a><a href="#research">研究发现</a><a href="methodology.html">方法</a><a class="github" href="https://github.com/zlznzyq/futurecareer-evidence" target="_blank">GitHub ↗</a></nav>
+</header>
+
+<main>
+<section class="hero">
+<div class="heroCopy">
+<div class="kicker">OPEN · EXPLAINABLE · EVIDENCE-BASED</div>
+<h1>看懂一个职业，<br><em>不只看“AI风险”。</em></h1>
+<p>把市场机会、AI使用、人的工作结构和真实劳动力市场数据放在一起。复杂方法留在后台，重要结论一眼看懂。</p>
+<div class="searchBox" id="explore"><span>⌕</span><input id="search" placeholder="搜索职业，例如 Software Developer / Lawyer"><kbd>/</kbd><div id="suggestions"></div></div>
+<div class="trustRow"><span><b>867</b> 详细职业</span><span><b>6+</b> 权威数据源</span><span><b>100%</b> 方法公开</span></div>
+</div>
+<div class="heroPanel">
+<div class="panelTop"><span>最重要的区别</span><b>01</b></div>
+<div class="heroEquation"><span>AI可影响</span><strong>≠</strong><span>职业会消失</span></div>
+<p>AI暴露衡量技术能够触及什么，不直接回答就业会怎样。</p>
+<a href="methodology.html">为什么？看方法 →</a>
+</div>
+</section>
+
+<section id="detail" class="hidden"></section>
+<section id="comparePanel" class="hidden"></section>
+
+<section id="research" class="research">
+<div class="sectionIntro"><span>WHAT WE FOUND</span><h2>研究结果，先讲人话。</h2><p>以下是当前公开数据支持的结果，不把相关性包装成因果。</p></div>
+<div class="researchGrid">
+<article><div class="big">0.877</div><h3>ILO指标的独立验证</h3><p>能较好地区分BLS自己明确提到AI影响的职业。</p><small>AUC · 不是就业预测准确率</small></article>
+<article><div class="big">0.874</div><h3>真实AI使用的独立验证</h3><p>Anthropic观察使用也能识别BLS提到AI影响的职业。</p><small>AUC · convergent validation</small></article>
+<article><div class="big">2</div><h3>人的工作结构更像两部分</h3><p>“判断/社会情境”与“具身活动”比单一护城河更符合当前数据。</p><small>Parallel analysis · exploratory</small></article>
+</div>
+</section>
+
+<section class="how">
+<div><span class="kicker">HOW TO READ A CAREER</span><h2>只需要看三层。</h2></div>
+<div class="steps">
+<div><b>1</b><h3>先看事实</h3><p>增长、岗位、工资。</p></div>
+<div><b>2</b><h3>再看变化</h3><p>AI可影响程度与真实使用。</p></div>
+<div><b>3</b><h3>最后看原因</h3><p>点“为什么”追到公式和来源。</p></div>
+</div>
+</section>
+</main>
+
+<div id="modal" class="modal hidden"><div class="modalbox"><button id="closeModal">×</button><div id="modalContent"></div></div></div>
+<footer><div><b>FutureCareer Evidence</b><p>Same data. Better questions.</p></div><div><a href="methodology.html">Methodology</a><a href="https://github.com/zlznzyq/futurecareer-evidence">GitHub</a></div></footer>
+<script src="app.js"></script>
+</body></html>

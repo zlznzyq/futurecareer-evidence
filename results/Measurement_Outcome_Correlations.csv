@@ -1,0 +1,37 @@
+metric,outcome,n,pearson_r,p_value
+Physicality,"Employment change, percent, 2025–35",761,-0.06764129231429461,0.0621761879829608
+Physicality,"Occupational openings, 2025–35 annual average",761,-0.014509359192035694,0.689435258790824
+Physicality,"Median annual wage, dollars, 2025",756,-0.3113087794839724,1.88255859033909e-18
+Physicality,"Occupational transfer rate, 2025–35 annual average",761,0.28014813507198916,3.4423377999010617e-15
+Judgment,"Employment change, percent, 2025–35",761,0.3117714164879505,1.2865494658716248e-18
+Judgment,"Occupational openings, 2025–35 annual average",761,-0.13632417667357413,0.00016187194839581014
+Judgment,"Median annual wage, dollars, 2025",756,0.49184006954721676,2.660459098009627e-47
+Judgment,"Occupational transfer rate, 2025–35 annual average",761,-0.421615710531797,3.768476949019838e-34
+Interaction,"Employment change, percent, 2025–35",761,0.2676333581353761,5.992524050072507e-14
+Interaction,"Occupational openings, 2025–35 annual average",761,0.09659253424172143,0.007664996190098695
+Interaction,"Median annual wage, dollars, 2025",756,0.24884536323805384,3.9138866887815396e-12
+Interaction,"Occupational transfer rate, 2025–35 annual average",761,-0.14731186328786455,4.515710220205697e-05
+Responsibility,"Employment change, percent, 2025–35",761,0.2051912555761135,1.1163356428977361e-08
+Responsibility,"Occupational openings, 2025–35 annual average",761,-0.12919974024021016,0.00035256250260692006
+Responsibility,"Median annual wage, dollars, 2025",756,0.28281808583340995,2.268398046704321e-15
+Responsibility,"Occupational transfer rate, 2025–35 annual average",761,-0.15812586321700756,1.1731107095429669e-05
+Context,"Employment change, percent, 2025–35",761,0.24628300614205112,5.609093776169658e-12
+Context,"Occupational openings, 2025–35 annual average",761,-0.04270959007887356,0.23927663453138687
+Context,"Median annual wage, dollars, 2025",756,0.32903838051166995,1.513300500034616e-20
+Context,"Occupational transfer rate, 2025–35 annual average",761,-0.2683571375472394,5.100244976583506e-14
+HumanMoat_seed_equal_weight,"Employment change, percent, 2025–35",761,0.26253200315860464,1.8412993640666962e-13
+HumanMoat_seed_equal_weight,"Occupational openings, 2025–35 annual average",761,-0.06761619009195577,0.06227348228672346
+HumanMoat_seed_equal_weight,"Median annual wage, dollars, 2025",756,0.2697597451657532,4.515642582581808e-14
+HumanMoat_seed_equal_weight,"Occupational transfer rate, 2025–35 annual average",761,-0.1789726613320648,6.721573664428347e-07
+ilo_exposure_mean,"Employment change, percent, 2025–35",811,-0.035307781699937826,0.31525357817589944
+ilo_exposure_mean,"Occupational openings, 2025–35 annual average",811,0.03214311325620115,0.3606128576983573
+ilo_exposure_mean,"Median annual wage, dollars, 2025",805,0.14131830009615426,5.733109949666465e-05
+ilo_exposure_mean,"Occupational transfer rate, 2025–35 annual average",811,-0.19427711396813846,2.442438543196498e-08
+observed_exposure,"Employment change, percent, 2025–35",755,-0.010267194210933054,0.7782085308318896
+observed_exposure,"Occupational openings, 2025–35 annual average",755,0.09059004832444739,0.012768412575468608
+observed_exposure,"Median annual wage, dollars, 2025",752,0.0951317016856806,0.00904515029647635
+observed_exposure,"Occupational transfer rate, 2025–35 annual average",755,-0.13402845624557233,0.00022135461323783518
+exposure_gap,"Employment change, percent, 2025–35",749,0.01719348682949305,0.6384994554580432
+exposure_gap,"Occupational openings, 2025–35 annual average",749,0.04886056753343095,0.18162318690610849
+exposure_gap,"Median annual wage, dollars, 2025",746,-0.09480899468058503,0.009569352716177766
+exposure_gap,"Occupational transfer rate, 2025–35 annual average",749,0.07408487984759647,0.042668076432561375
