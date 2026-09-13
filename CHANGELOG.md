@@ -25,3 +25,17 @@ See repository history for the measurement-validation release.
 - Added UX principles, claims policy, Chinese glossary, metric dictionary and provenance gates.
 - Simplified methodology page while retaining full technical documentation in the repository.
 - Added step-by-step Chinese GitHub/Pages deployment guide.
+
+## v0.8.0 — Decision Product RC
+- Added persistent 3-career Compare.
+- Added Career Snapshot and meaning labels.
+- Kept CEI Beta visible.
+- Added Personal Fit limited open beta.
+- Added browser-local Save & Watch preview.
+
+## v1.0.0 — Launch RC
+- Full decision-product UX.
+- Auditable Future Skill Alignment v1.
+- CEI recomputed.
+- Source-scale vs percentile distinction fixed.
+- Compare, Personal Fit, Save/Watch, Update Center, share links, evidence cards.

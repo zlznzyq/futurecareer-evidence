@@ -1,51 +1,80 @@
-# Metric Dictionary
+# Metric Dictionary v1.0
 
-Every public number must have a source, formula and interpretation.
+Every public number must have a source, formula, grain and interpretation.
 
-| Public metric | Raw evidence | Transformation | Source | Interpretation |
+| Metric | Formula / transformation | Source | Grain | Meaning |
 |---|---|---|---|---|
-| Employment Growth | Employment 2025, Employment 2035 | $(E_{2035}-E_{2025})/E_{2025}$ | BLS 2025–2035 | projected employment change |
-| Growth Score | Employment Growth | $100\times PercentileRank$ | derived from BLS | relative occupation position |
-| Opening Rate | Annual openings, Employment 2025 | $Openings/E_{2025}$ | BLS | openings relative to occupation size |
-| Opening Score | Opening Rate | $100\times PercentileRank$ | derived from BLS | relative occupation position |
-| Market Opportunity | Growth Score, Opening Score | $0.55G+0.45O$ | transparent beta formula | descriptive market summary |
-| Wage Position | Median annual wage 2025 | $100\times PercentileRank$ | BLS | relative wage position |
-| AI Potential Exposure | occupation/task exposure | source-aligned scale; percentile stored separately | ILO 2025 | potential GenAI task exposure |
-| Observed AI Usage | observed occupation/task usage | source-aligned scale; percentile stored separately | Anthropic Economic Index | observed use in Anthropic data |
-| Exposure Gap | ILO percentile, Anthropic percentile | $Pctl(Observed)-Pctl(Potential)$ | derived | potential-vs-observed rank difference |
-| Physicality | O*NET activity/context variables | normalized composite | O*NET 31.0 | embodied/physical work structure |
-| Judgment | O*NET variables | normalized composite | O*NET 31.0 | judgment/decision structure |
-| Interaction | O*NET variables | normalized composite | O*NET 31.0 | interpersonal work structure |
-| Responsibility | O*NET variables | normalized composite | O*NET 31.0 | responsibility/consequence structure |
-| Context | O*NET variables | normalized composite | O*NET 31.0 | contextual/decision dependence |
-| Human Structure Beta | five dimensions | equal-weight seed; alternatives tested | O*NET-derived | descriptive occupational structure |
-| Future Skill Fit Beta | BLS skill profile + WEF trend map | documented weighted alignment | BLS Skills + WEF 2025 | alignment with employer-reported future skill directions |
-| Career Evidence Index Beta | Market, Wage, Human Structure, Future Skill | $0.35M+0.25W+0.20H+0.20F$ | derived | optional descriptive summary, not forecast probability |
-| RPLS Employment Trend | monthly SOC2 employment | annualized log-linear trend | RPLS | broad occupation-group history |
-| RPLS Posting Trend | monthly SOC2 postings | annualized log-linear trend | RPLS | broad occupation-group posting history |
-| RPLS Salary Trend | monthly SOC2 salary | annualized log-linear trend | RPLS | broad occupation-group salary history |
-| Hiring / Attrition | monthly SOC2 rates | source rate / period summary | RPLS | broad occupation-group labor flow |
+| Employment Growth | $(E_{2035}-E_{2025})/E_{2025}$ | BLS | SOC6 | projected change |
+| Opening Rate | Annual Openings / Employment 2025 | BLS | SOC6 | opportunity relative to occupation size |
+| Percentile Score | $100\times PercentileRank(x)$ | derived | release universe | relative position |
+| Market Opportunity | $0.55G+0.45O$ | BLS-derived | SOC6 | market summary |
+| Wage Position | wage percentile | BLS | SOC6 | relative wage |
+| AI Potential Exposure | source-aligned exposure; percentile separate | ILO 2025 | mapped SOC6 | potential task exposure |
+| Observed AI Usage | source-aligned use; percentile separate | Anthropic | mapped SOC6 | observed AI use |
+| Human Structure Beta | equal mean of 5 dimension composites | O*NET 31.0 | SOC6 | human work structure |
+| Future Skill Alignment v1 | weighted mapped BLS skill percentiles | BLS + WEF | SOC6 | alignment with WEF rising skills |
+| CEI Beta | $0.35M+0.25W+0.20H+0.20F$ | derived | SOC6 | descriptive composite |
+| Personal Fit Beta | normalized user weights × occupation scores | user + derived | session/browser | preference alignment |
+| RPLS Trends | annualized log-linear monthly trend | RPLS | SOC2 | broad historical context |
 
-## Percentile convention
+## Human Structure proxies
 
-When the product displays a percentile score:
+**Physicality**
+- Performing General Physical Activities
+- Handling and Moving Objects
+- Operating Vehicles, Mechanized Devices, or Equipment
+
+**Judgment**
+- Making Decisions and Solving Problems
+- Frequency of Decision Making
+- Freedom to Make Decisions
+
+**Interaction**
+- Contact With Others
+- Coordinate or Lead Others
+- Deal With External Customers or the Public
+- Face-to-Face Discussions
+- Resolving Conflicts and Negotiating
+
+**Responsibility**
+- Consequence of Error
+- Impact of Decisions on Co-workers or Company Results
+
+**Context**
+- Conflict Situations
+- Freedom to Make Decisions
+- Frequency of Decision Making
+
+## Public rule
+No metric enters the UI without:
+1. source/version;
+2. raw/upstream field;
+3. transformation;
+4. occupation/geographic grain;
+5. missing-value rule;
+6. interpretation boundary.
+
+## Geographic scope
+
+The current production dataset is primarily **United States occupation data**.
+
+- BLS: U.S.
+- O*NET: U.S.
+- RPLS: U.S. labor-market context.
+- ILO and Anthropic measures are mapped into the U.S. occupation backbone.
+
+U.S. wages and employment projections must not be presented as China-local outcomes.
+
+## Personal Fit missing-data rule
+
+For occupation $o$:
 
 $$
-Score_o=100\times PercentileRank(x_o)
+PersonalFit_o=
+\frac{\sum_{k\in A_o}w_kS_{o,k}}
+{\sum_{k\in A_o}w_k}
 $$
 
-The comparison universe and version must remain fixed within a release.
+where $A_o$ contains only metrics actually available for occupation $o$.
 
-## Important distinction
-
-A source-scaled AI exposure value and an occupation percentile are different quantities. The UI should label both explicitly whenever both are shown.
-
-## No hidden numbers
-
-A metric must not enter the public interface unless the repository contains:
-
-1. raw/source field reference;
-2. transformation rule;
-3. source/version;
-4. missing-value behavior;
-5. geographic and occupation granularity.
+Missing metrics are **not** filled with zero, 50, or another neutral value.

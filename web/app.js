@@ -1,64 +1,65 @@
-let careers=[],current=null,compare=[];
-const $=s=>document.querySelector(s);
-fetch('data/careers.json').then(r=>r.json()).then(d=>careers=d);
-const fmt=x=>x==null?'—':Number(x).toFixed(1);
-const money=x=>x==null?'—':'$'+Number(x).toLocaleString();
-const pctText=v=>v==null?'暂无数据':`相对分 ${fmt(v)} / 100`;
+let careers=[],current=null;
+let compare=JSON.parse(localStorage.getItem("fc_compare")||"[]"), saved=JSON.parse(localStorage.getItem("fc_saved")||"[]");
+let prefs=JSON.parse(localStorage.getItem("fc_prefs")||'{"market":30,"wageScore":25,"skillFit":20,"human":15,"aiSafety":10}');
+const $=s=>document.querySelector(s),fmt=x=>x==null?"—":Number(x).toFixed(1),money=x=>x==null?"—":"$"+Number(x).toLocaleString();
+fetch("data/careers.json").then(r=>r.json()).then(d=>{careers=d;
+let qp=new URLSearchParams(location.search).get("compare");if(qp){compare=qp.split(",").filter(s=>careers.some(x=>x.soc===s)).slice(0,3);localStorage.setItem("fc_compare",JSON.stringify(compare))}
+counts();route()});
+function counts(){$("#compareCount").textContent=compare.length;$("#savedCount").textContent=saved.length}
+function focusSearch(){$("#search").focus()} function toast(t){let e=$("#toast");e.textContent=t;e.classList.remove("hidden");setTimeout(()=>e.classList.add("hidden"),1800)}
+function band(p){if(p==null)return"暂无排名";if(p>=90)return"Top 10%";if(p>=75)return"前25%";if(p>=50)return"中上";if(p>=25)return"中下";return"后25%"}
+function scoreMeaning(v,p){return `${fmt(v)} / 100 · ${band(p)}${p==null?"":`（第${Math.round(p)}百分位）`}`}
 function bar(v){return `<div class="bar"><i style="width:${Math.max(0,Math.min(100,v||0))}%"></i></div>`}
-function metric(name,v,key,meaning){
- return `<div class="card"><h3>${name}</h3><div class="score">${fmt(v)}</div><div class="scaleText">${pctText(v)}</div>${bar(v)}<p class="sub">${meaning}</p><div class="why" onclick="explain('${key}')">为什么？查看来源与算法 →</div></div>`
-}
-$('#search').oninput=e=>{let q=e.target.value.trim().toLowerCase(),s=$('#suggestions');if(!q){s.innerHTML='';return}
-let hits=careers.filter(x=>(x.title+' '+(x.titleZh||'')+' '+x.soc).toLowerCase().includes(q)).slice(0,8);
-s.innerHTML=hits.map(x=>`<div class="suggestion" onclick="show('${x.soc}')"><b>${x.title}</b>${x.titleZh?` · ${x.titleZh}`:''}<br><span class="sub">SOC ${x.soc}</span></div>`).join('')};
-function show(soc){current=careers.find(x=>x.soc===soc);$('#suggestions').innerHTML='';$('#search').value=current.title;render();$('#detail').scrollIntoView({behavior:'smooth'})}
-function summary(x){
- let parts=[];
- if(x.market!=null) parts.push(x.market>=70?'市场机会相对较强':x.market<35?'市场机会相对偏弱':'市场机会处于中间区间');
- if(x.aiPotential!=null) parts.push(x.aiPotential>=60?'AI可影响程度较高':x.aiPotential<30?'AI可影响程度较低':'AI可影响程度中等');
- if(x.human!=null) parts.push(x.human>=65?'工作较依赖人的判断/互动/情境':'人的工作结构需结合五维细看');
- return parts.join('；')+'。';
-}
-function render(){let x=current,d=$('#detail');d.classList.remove('hidden');$('#comparePanel').classList.add('hidden');
-d.innerHTML=`<div class="container">
-<div class="careerhead"><div><h2>${x.title}${x.titleZh?`<span class="zhTitle">${x.titleZh}</span>`:''}</h2><div class="sub">SOC ${x.soc} · 映射可信度 ${x.mappingConfidence||'—'} · 数据覆盖 ${fmt(x.confidence)}/100 (${x.confidenceGrade||'—'})</div><button class="compareAdd" onclick="addCompare()">+ 加入比较</button></div>
-<div class="cei"><div class="sub">Career Evidence Index · Beta</div><div class="num">${fmt(x.cei)}</div><div class="scaleText">描述性综合指数，不是成功概率</div></div></div>
-<div class="plainSummary"><b>一句话：</b>${summary(x)}</div>
-<div class="notice"><b>先别把AI分数当“淘汰概率”。</b> AI可影响程度只说明技术能触及多少任务；就业结果要结合市场和真实使用一起看。</div>
-<h3 class="sectiontitle">先看这6个数字</h3><div class="grid">
-${metric('市场机会',x.market,'market','就业增长 + 岗位机会率')}
-${metric('工资位置',x.wageScore,'wage','2025中位工资的职业间相对位置')}
-${metric('未来技能匹配 · Beta',x.skillFit,'skill','当前技能与未来增长技能方向的匹配')}
-${metric('AI可影响程度',x.aiPotential,'ilo','理论上GenAI可影响职业任务的程度')}
-${metric('AI实际使用',x.aiObserved,'anthropic','Anthropic数据中观察到的AI使用')}
-${metric('人的工作结构 · Beta',x.human,'human','工作对判断、人际、责任、情境和具身活动的依赖')}</div>
-<h3 class="sectiontitle">人的工作结构：不要只看总分</h3><div class="human">
-${metric('具身活动',x.physicality,'physicality','需要身体/现场活动的程度')}
-${metric('判断',x.judgment,'judgment','需要判断和决策的程度')}
-${metric('人际互动',x.interaction,'interaction','需要与人沟通协作的程度')}
-${metric('责任',x.responsibility,'responsibility','决策后果与责任要求')}
-${metric('情境依赖',x.context,'context','工作依赖复杂情境和自主决策的程度')}</div>
-<h3 class="sectiontitle">原始事实 · BLS</h3><div class="evidence">
-<div class="card"><h3>2025–35就业增长</h3><div class="score">${x.growthRaw==null?'—':fmt(x.growthRaw)+'%'}</div><p class="sub">BLS官方预测</p></div>
-<div class="card"><h3>年均岗位机会</h3><div class="score">${x.openingsRaw==null?'—':Number(x.openingsRaw).toLocaleString()}</div><p class="sub">BLS原表口径</p></div>
-<div class="card"><h3>2025中位工资</h3><div class="score">${money(x.wageRaw)}</div><p class="sub">BLS</p></div>
-<div class="card"><h3>职业转移率</h3><div class="score">${x.transferRate==null?'—':fmt(x.transferRate)+'%'}</div><p class="sub">BLS 2025–35</p></div></div>
-${x.rpls?`<h3 class="sectiontitle">历史劳动力市场背景 · SOC2</h3><div class="notice">以下是该职业所属<b>职业大类</b>的历史趋势，不代表这个SOC6职业本身。</div><div class="evidence">
-<div class="card"><h3>Employment trend</h3><div class="score">${fmt(x.rpls.employmentTrend)}%</div><p class="sub">RPLS 2022–2026 · annualized</p></div>
-<div class="card"><h3>Posting trend</h3><div class="score">${fmt(x.rpls.postingTrend)}%</div><p class="sub">RPLS SOC2</p></div>
-<div class="card"><h3>Salary trend</h3><div class="score">${fmt(x.rpls.salaryTrend)}%</div><p class="sub">RPLS SOC2</p></div>
-<div class="card"><h3>Net hiring</h3><div class="score">${fmt(x.rpls.netHiring)}</div><p class="sub">Hiring − Attrition · SOC2</p></div></div>`:''}
-</div>`}
-const info={
-market:['市场机会','BLS 2025–2035就业增长分与岗位机会率分的Beta组合。','BLS Employment Projections 2025–2035','$0.55×GrowthScore + 0.45×OpeningScore$'],
-wage:['工资位置','2025中位工资在当前可比较职业集合中的相对位置。','BLS 2025','100 × percentile rank'],
-skill:['未来技能匹配 · Beta','把BLS职业技能结构与WEF 2025未来技能方向对齐。','BLS Skills 2025 + WEF Future of Jobs 2025','documented weighted alignment'],
-ilo:['AI可影响程度','衡量GenAI潜在任务暴露。它不是失业概率。','ILO 2025 refined GenAI exposure','source-aligned exposure scale'],
-anthropic:['AI实际使用','来自Anthropic Economic Index的观察使用信号，不代表全部AI市场。','Anthropic Economic Index','source-aligned observed-use measure'],
-human:['人的工作结构 · Beta','由O*NET可观察工作活动和情境变量构建；V0.3平行分析更支持两因子结构。','O*NET 31.0','five-dimension transparent research seed']
+function metric(name,v,p,key,desc){return `<div class="card"><h3>${name}</h3><div class="score">${fmt(v)}</div><span class="meaning">${band(p)}${p==null?"":` · 第${Math.round(p)}百分位`}</span>${bar(v)}<p class="sub">${desc}</p><div class="why" onclick="explain('${key}')">为什么？看公式和来源 →</div></div>`}
+$("#search").oninput=e=>{let q=e.target.value.trim().toLowerCase(),s=$("#suggestions");if(!q){s.innerHTML="";return}let hits=careers.filter(x=>(x.title+" "+(x.titleZh||"")+" "+x.soc).toLowerCase().includes(q)).slice(0,8);s.innerHTML=hits.map(x=>`<div class="suggestion" onclick="show('${x.soc}')"><b>${x.title}</b>${x.titleZh?` · ${x.titleZh}`:""}<br><span class="sub">SOC ${x.soc}</span></div>`).join("")};
+function show(soc){current=careers.find(x=>x.soc===soc);if(!current)return;FCAnalytics?.event("career_open",{soc});location.hash="career="+soc;$("#suggestions").innerHTML="";$("#search").value=current.title;render();setTimeout(()=>$("#detail").scrollIntoView({behavior:"smooth"}),50)}
+function route(){let m=location.hash.match(/career=([^&]+)/);if(m)show(decodeURIComponent(m[1]))} window.addEventListener("hashchange",route);
+function oneLine(x){let a=[];if(x.wagePct!=null)a.push(x.wagePct>=75?"高收入":x.wagePct<25?"收入相对偏低":"收入中等");if(x.marketPct!=null)a.push(x.marketPct>=75?"市场机会较强":x.marketPct<25?"市场机会偏弱":"市场机会中等");if(x.aiObservedPct!=null)a.push(x.aiObservedPct>=75?"AI实际使用较高":x.aiObservedPct<25?"AI实际使用较低":"AI实际使用中等");return a.join(" · ")}
+function snapshot(x){return `<div class="snapshot"><div class="snapLead"><span class="eyebrow light">CAREER SNAPSHOT</span><p><b>${oneLine(x)||"数据仍在补充"}</b><br><span style="color:#cbd5e1">10秒先看结论，再深入证据。</span></p></div>
+<div class="snap"><label>工资</label><strong>${money(x.wageRaw)}</strong><span class="meaning">${band(x.wagePct)}</span><div class="sub">第${x.wagePct==null?"—":Math.round(x.wagePct)}百分位</div></div>
+<div class="snap"><label>市场机会</label><strong>${fmt(x.market)} / 100</strong><span class="meaning">${band(x.marketPct)}</span><div class="sub">${x.growthRaw==null?"":`BLS增长 ${fmt(x.growthRaw)}%`}</div></div>
+<div class="snap"><label>AI实际使用</label><strong>${fmt(x.aiObserved)} / 100</strong><span class="meaning">${band(x.aiObservedPct)}</span><div class="sub">潜在影响 ${fmt(x.aiPotential)} / 100</div></div></div>`}
+function render(){let x=current,d=$("#detail");d.classList.remove("hidden");d.innerHTML=`<div class="container"><div class="careerHead"><div><h2>${x.title}${x.titleZh?`<span class="zhTitle">${x.titleZh}</span>`:""}</h2><div class="sub">SOC ${x.soc} · 映射 ${x.mappingConfidence||"—"} · 数据覆盖 ${fmt(x.confidence)}/100 (${x.confidenceGrade||"—"})</div><div class="actionRow"><button class="primary" onclick="toggleCompare('${x.soc}')">${compare.includes(x.soc)?"✓ 已加入比较":"+ 加入比较"}</button><button onclick="toggleSave('${x.soc}')">${saved.includes(x.soc)?"★ 已收藏":"☆ 收藏并跟踪"}</button><button onclick="openFit('${x.soc}')">个人报告 · 限时体验</button><button onclick="shareCareer('${x.soc}')">分享</button></div></div>
+<div class="cei"><span class="badge">CEI · BETA</span><div class="num">${fmt(x.cei)}</div><div class="sub">${band(x.ceiPct)} · 第${x.ceiPct==null?"—":Math.round(x.ceiPct)}百分位<br>描述性综合指数，不是成功概率</div></div></div>
+${snapshot(x)}
+<div class="notice"><b>怎么读数字？</b> “52.7/100”是指标值；“第X百分位”告诉你相对其他职业的位置。AI指标不是失业概率。</div>
+<h3 class="sectionTitle">核心决策维度</h3><div class="grid">${metric("市场机会",x.market,x.marketPct,"market","就业增长与岗位机会率的透明组合")}${metric("工资位置",x.wageScore,x.wagePct,"wage","2025中位工资的职业间位置")}${metric("未来技能匹配 · Beta",x.skillFit,x.skillFitPct,"skill","BLS技能与WEF 2025上升技能的透明映射")}${metric("AI可影响程度",x.aiPotential,x.aiPotentialPct,"ilo","ILO潜在GenAI任务暴露")}${metric("AI实际使用",x.aiObserved,x.aiObservedPct,"anthropic","Anthropic数据中的观察使用")}${metric("人的工作结构 · Beta",x.human,x.humanPct,"human","判断、人际、责任、情境与具身活动")}</div>
+<h3 class="sectionTitle">人的工作结构：拆开看</h3><div class="human">${metric("具身活动",x.physicality,null,"physicality","身体与现场活动")}${metric("判断",x.judgment,null,"judgment","判断和决策")}${metric("人际互动",x.interaction,null,"interaction","沟通与协作")}${metric("责任",x.responsibility,null,"responsibility","决策后果与责任")}${metric("情境依赖",x.context,null,"context","复杂情境与自主决策")}</div>
+<h3 class="sectionTitle">原始事实 · BLS</h3><div class="facts"><div class="card"><h3>2025–35就业增长</h3><div class="score">${x.growthRaw==null?"—":fmt(x.growthRaw)+"%"}</div><p class="sub">BLS官方预测</p></div><div class="card"><h3>年均岗位机会</h3><div class="score">${x.openingsRaw==null?"—":Number(x.openingsRaw).toLocaleString()}</div><p class="sub">BLS原表口径</p></div><div class="card"><h3>2025中位工资</h3><div class="score">${money(x.wageRaw)}</div><p class="sub">BLS</p></div><div class="card"><h3>职业转移率</h3><div class="score">${x.transferRate==null?"—":fmt(x.transferRate)+"%"}</div><p class="sub">BLS 2025–35</p></div></div>
+${x.soc2Context&&x.soc2Context.name?`<h3 class="sectionTitle">历史劳动力市场背景 · SOC2</h3><div class="soc2"><b>${x.soc2Context.name}</b><p class="sub">以下是该职业所属<b>职业大类</b>在RPLS 2022–2026的历史背景，不代表这个SOC6职业本身。</p><div class="facts"><div><b>就业趋势</b><br>${fmt(x.soc2Context.employmentTrend)}%/年</div><div><b>招聘发布趋势</b><br>${fmt(x.soc2Context.postingTrend)}%/年</div><div><b>工资趋势</b><br>${fmt(x.soc2Context.salaryTrend)}%/年</div><div><b>净Hiring</b><br>${fmt(x.soc2Context.netHiring)}</div></div></div>`:""}</div>`}
+function toggleCompare(s){if(compare.includes(s))compare=compare.filter(x=>x!==s);else if(compare.length<3)compare.push(s);else return toast("最多比较3个职业");localStorage.setItem("fc_compare",JSON.stringify(compare));counts();if(compare.includes(s))FCAnalytics?.event("compare_add",{soc:s,count:compare.length});if(current)render();toast(compare.includes(s)?"已加入比较":"已移出比较")}
+function toggleSave(s){if(saved.includes(s))saved=saved.filter(x=>x!==s);else saved.push(s);localStorage.setItem("fc_saved",JSON.stringify(saved));counts();if(saved.includes(s))FCAnalytics?.event("career_save",{soc:s});if(current)render();toast(saved.includes(s)?"已收藏":"已取消收藏")}
+function shareCareer(s){let u=location.origin+location.pathname+"#career="+encodeURIComponent(s);navigator.clipboard?.writeText(u);FCAnalytics?.event("share_career",{soc:s});toast("职业链接已复制")}
+function openDrawer(t,b){$("#drawerTitle").textContent=t;$("#drawerBody").innerHTML=b;$("#drawer").classList.remove("hidden");$("#overlay").classList.remove("hidden")}
+function closeDrawer(){$("#drawer").classList.add("hidden");$("#overlay").classList.add("hidden")} function closeModal(){$("#modal").classList.add("hidden")}
+function openCompare(){FCAnalytics?.event("compare_open",{count:compare.length});let xs=compare.map(s=>careers.find(x=>x.soc===s)).filter(Boolean);if(!xs.length)return openDrawer("职业比较",`<div class="empty"><h3>还没有职业</h3><p>搜索职业后点“加入比较”。最多3个。</p><button onclick="closeDrawer();focusSearch()">去搜索</button></div>`);let rows=[["CEI · Beta","cei","ceiPct"],["市场机会","market","marketPct"],["工资位置","wageScore","wagePct"],["未来技能","skillFit","skillFitPct"],["AI可影响","aiPotential","aiPotentialPct"],["AI实际使用","aiObserved","aiObservedPct"],["人的工作结构","human","humanPct"]];let table=rows.map(([n,k,p])=>{let valid=xs.map(x=>x[k]).filter(v=>v!=null),mx=valid.length?Math.max(...valid):null;return `<tr><td>${n}</td>${xs.map(x=>`<td class="${mx!=null&&x[k]===mx?"winner":""}"><b>${fmt(x[k])}</b><br><small>${x[p]==null?"":`P${Math.round(x[p])}`}</small></td>`).join("")}</tr>`}).join("");openDrawer("职业比较",`<div class="notice">↑ 只表示该维度数值更高，不代表总体更好。点击“按我的偏好”进行个性化权衡。</div><div class="compareCards">${xs.map(x=>`<div class="compareCareer"><b>${x.title}</b><p class="sub">${x.titleZh||""}<br>${money(x.wageRaw)} · Growth ${fmt(x.growthRaw)}%</p><button onclick="toggleCompare('${x.soc}');openCompare()">移除</button></div>`).join("")}</div><table class="compareTable"><tr><th>维度</th>${xs.map(x=>`<th>${x.title.split(" ")[0]}</th>`).join("")}</tr>${table}</table><div class="actionRow"><button class="primary" onclick="openFit()">按我的偏好比较 →</button><button onclick="shareCompare()">复制对比链接</button></div>`)}
+function shareCompare(){let u=location.origin+location.pathname+"?compare="+compare.join(",");navigator.clipboard?.writeText(u);toast("对比链接已复制")}
+function openFit(soc){FCAnalytics?.event("fit_open",{soc:soc||null,count:compare.length});let xs=soc?[careers.find(x=>x.soc===soc)]:compare.map(s=>careers.find(x=>x.soc===s)).filter(Boolean);if(!xs.length&&current)xs=[current];if(!xs.length)return openDrawer("个人报告 · 限时体验",'<div class="empty">先选择至少一个职业。</div>');window.fitTargets=xs;let defs=[["市场机会","market"],["工资","wageScore"],["未来技能","skillFit"],["人的工作结构","human"],["低AI暴露偏好","aiSafety"]];openDrawer("个人报告 · 限时开放体验",`<div class="watchNote"><b>Open Beta</b><br>这是“你的偏好 × 客观职业证据”，不是个人成功概率。权重只保存在当前浏览器。</div><div class="fitBox">${defs.map(([n,k])=>`<div class="sliderRow"><label>${n}</label><input type="range" min="0" max="100" value="${prefs[k]??20}" data-key="${k}" oninput="calcFit()"><b class="sv">${prefs[k]??20}</b></div>`).join("")}<button onclick="savePrefs()">保存我的偏好</button></div><div id="fitResults"></div>`);calcFit()}
+function calcFit(){let ss=[...document.querySelectorAll(".sliderRow input")];ss.forEach(s=>s.parentElement.querySelector(".sv").textContent=s.value);
+let results=(window.fitTargets||[]).map(x=>{let numerator=0,denominator=0,used=[];
+ss.forEach(s=>{let key=s.dataset.key,w=Number(s.value);let val=key==="aiSafety"?(x.aiPotential==null?null:100-x.aiPotential):x[key];
+if(val!=null&&w>0){numerator+=w*val;denominator+=w;used.push(key)}});
+let sc=denominator>0?numerator/denominator:null;return [x,sc,used.length]}).sort((a,b)=>(b[1]??-1)-(a[1]??-1));
+$("#fitResults").innerHTML=results.map(([x,sc,n],i)=>`<div class="fitResult"><span class="badge">PERSONAL FIT · BETA</span><h3>${i+1}. ${x.title}</h3><div class="fitNum">${sc==null?"—":sc.toFixed(1)}</div><p>基于 ${n} 个可用维度重新归一化权重计算；缺失指标不会被填成0或50。</p></div>`).join("")}
+function savePrefs(){[...document.querySelectorAll(".sliderRow input")].forEach(s=>prefs[s.dataset.key]=Number(s.value));localStorage.setItem("fc_prefs",JSON.stringify(prefs));toast("偏好已保存在本浏览器")}
+function openSaved(){let xs=saved.map(s=>careers.find(x=>x.soc===s)).filter(Boolean);openDrawer("收藏与跟踪",xs.length?`<div class="watchNote"><b>Watch Preview</b><br>当前收藏保存在浏览器。未来数据版本更新时，可展示“哪些指标变化了”；邮件/推送只会在明确授权后开启。</div>${xs.map(x=>`<div class="savedItem"><div><b>${x.title}</b><div class="sub">${oneLine(x)}</div></div><div><button onclick="show('${x.soc}');closeDrawer()">查看</button> <button onclick="toggleSave('${x.soc}');openSaved()">移除</button></div></div>`).join("")}`:`<div class="empty"><h3>还没有收藏</h3><p>收藏职业后可以快速回来比较和跟踪。</p></div>`)}
+function openUpdates(){openDrawer("数据更新中心",`<div class="watchNote"><b>当前公开版本：v1.0.0 Launch RC</b><br>职业主数据：BLS 2025–2035 · O*NET 31.0 · ILO 2025 · WEF 2025<br>历史动态：RPLS 2022–2026</div><div class="card"><h3>更新机制</h3><p>每次数据release都保留版本号、来源版本、公式版本和SHA-256 Manifest。</p><p class="sub">正式通知功能将在有后端且用户明确授权后上线。当前不会后台收集个人数据。</p></div>`)}
+function openFeedback(){FCAnalytics?.event("feedback_open",{surface:"nav"});let cfg=window.FC_CONFIG||{};
+let survey=cfg.surveyUrl?`<a class="sourceLink" href="${cfg.surveyUrl}" target="_blank">填写体验问卷 →</a>`:"";
+openDrawer("帮助我们把它做得更好",`<div class="watchNote"><b>首轮中国用户体验测试</b><br>当前底层主要是美国职业数据。我们尤其想知道：哪些数字难理解？Compare/Personal Fit是否真的帮助决策？你最需要哪些中国本地数据？</div>
+<div class="card"><h3>建议反馈 3 件事</h3><p>1. 最有帮助的功能<br>2. 最难理解的数字<br>3. 最希望增加的数据/功能</p>${survey||`<p class="sub">问卷链接尚未配置。你可以先通过GitHub Issue反馈。</p>`}<a class="sourceLink" href="${cfg.feedbackIssueUrl}" target="_blank">GitHub Feedback ↗</a></div>`)}
+const INFO={
+market:{title:"市场机会",source:"BLS Employment Projections 2025–2035",formula:"Market = 0.55 × Growth percentile + 0.45 × Opening-rate percentile",note:"描述就业增长与岗位机会的相对位置，不是个人求职成功率。",url:"https://www.bls.gov/emp/"},
+wage:{title:"工资位置",source:"BLS 2025 median annual wage",formula:"Wage Score = 100 × percentile rank(median wage)",note:"比较美国职业的工资位置。",url:"https://www.bls.gov/emp/"},
+skill:{title:"未来技能匹配 · Beta",source:"BLS Skills 2025 + WEF Future of Jobs 2025",formula:"Σ(BLS skill percentile × WEF rank weight × mapping confidence) / Σ(effective weights)",note:"只纳入可审计映射；未能可靠映射的WEF技能不进入分数。",url:"https://www.weforum.org/publications/the-future-of-jobs-report-2025/"},
+ilo:{title:"AI可影响程度",source:"ILO 2025 refined GenAI occupational exposure",formula:"Source-aligned exposure score; occupation percentile shown separately",note:"潜在任务暴露，不是失业概率。",url:"https://www.ilo.org/publications/generative-ai-and-jobs-refined-global-index-occupational-exposure"},
+anthropic:{title:"AI实际使用",source:"Anthropic Economic Index",formula:"Source-aligned observed-use score; occupation percentile shown separately",note:"代表Anthropic数据中的观察使用，不代表全部AI市场。",url:"https://www.anthropic.com/economic-index"},
+human:{title:"人的工作结构 · Beta",source:"O*NET 31.0",formula:"Equal-weight mean of 5 transparent dimension composites",note:"五维由O*NET代理变量构造；平行分析提示两因子结构，因此整体分仍标Beta。",url:"https://www.onetcenter.org/database.html"},
+physicality:{title:"具身活动",source:"O*NET 31.0",formula:"Mean percentile of: Performing General Physical Activities; Handling and Moving Objects; Operating Vehicles/Equipment",note:"代理职业对身体与现场执行的依赖。",url:"https://www.onetcenter.org/database.html"},
+judgment:{title:"判断",source:"O*NET 31.0",formula:"Mean percentile of: Making Decisions and Solving Problems; Frequency of Decision Making; Freedom to Make Decisions",note:"代理判断、自主决策和问题解决。",url:"https://www.onetcenter.org/database.html"},
+interaction:{title:"人际互动",source:"O*NET 31.0",formula:"Mean percentile of 5 interaction/context proxies",note:"包括Contact With Others、协调领导、客户公众、面对面讨论、冲突协商。",url:"https://www.onetcenter.org/database.html"},
+responsibility:{title:"责任",source:"O*NET 31.0",formula:"Mean percentile of Consequence of Error and Impact of Decisions",note:"代理决策后果和责任。",url:"https://www.onetcenter.org/database.html"},
+context:{title:"情境依赖",source:"O*NET 31.0",formula:"Mean percentile of Conflict Situations; Freedom to Make Decisions; Frequency of Decision Making",note:"代理复杂情境和自主决策依赖。",url:"https://www.onetcenter.org/database.html"}
 };
-function explain(k){let a=info[k]||['人的工作结构维度','来自O*NET职业活动/情境变量，经统一处理形成可比较值。','O*NET 31.0','see Metric Dictionary'];
-$('#modalContent').innerHTML=`<h2>${a[0]}</h2><p>${a[1]}</p><hr><p><b>来源</b><br>${a[2]}</p><p><b>计算</b><br>${a[3]}</p><p><b>怎么读</b><br>0–100用于职业间比较，不是概率。完整字段、公式和粒度见 <a href="methodology.html">Methodology</a>。</p>`;$('#modal').classList.remove('hidden')}
-$('#closeModal').onclick=()=>$('#modal').classList.add('hidden');
-function addCompare(){if(!compare.find(x=>x.soc===current.soc)&&compare.length<3)compare.push(current);alert(`已加入比较（${compare.length}/3）`)}
-document.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement!==$('#search')){e.preventDefault();$('#search').focus()}});
+function explain(k){FCAnalytics?.event("evidence_open",{surface:k});let a=INFO[k];if(!a)return;$("#modalContent").innerHTML=`<span class="eyebrow">EVIDENCE CARD</span><h2>${a.title}</h2><p>${a.note}</p><h3>来源</h3><p>${a.source}</p><h3>计算</h3><div class="formula">${a.formula}</div><a class="sourceLink" href="${a.url}" target="_blank">打开官方来源 ↗</a><p class="sub">完整字段、crosswalk、缺失值规则和版本见GitHub的 Metric Dictionary / Processing Log / Provenance。</p>`;$("#modal").classList.remove("hidden")}
+document.addEventListener("keydown",e=>{if(e.key==="/"&&document.activeElement!==$("#search")){e.preventDefault();focusSearch()}if(e.key==="Escape"){closeDrawer();closeModal()}});

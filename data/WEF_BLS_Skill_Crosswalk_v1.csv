@@ -1,0 +1,11 @@
+﻿wef_skill,rank_weight,bls_skill,mapping_confidence,mapping_type,effective_weight
+AI and big data,10,Computers and information technology,0.7,proxy,7.0
+Networks and cybersecurity,9,Computers and information technology,0.6,proxy,5.3999999999999995
+Technological literacy,8,Computers and information technology,0.85,direct-ish,6.8
+Creative thinking,7,Creativity and innovation,0.95,direct,6.6499999999999995
+"Resilience, flexibility and agility",6,Adaptability,0.95,direct,5.699999999999999
+Curiosity and lifelong learning,5,,0.0,unmapped,0.0
+Leadership and social influence,4,Leadership,0.9,direct-ish,3.6
+Talent management,3,Leadership,0.6,proxy,1.7999999999999998
+Analytical thinking,2,Critical and analytical thinking,0.95,direct,1.9
+Environmental stewardship,1,,0.0,unmapped,0.0
